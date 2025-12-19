@@ -3564,7 +3564,7 @@
                             preload: 'auto',         // 自动预加载
                             volume: 0.8,             // 默认音量 80%
                             loop: false,             // 循环播放（可在设置中切换）
-                            playbackSpeed: [0.5, 0.75, 1, 1.25, 1.5, 2],  // 倍速选项
+                            playbackSpeed: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 3],  // 0.25间隔倍速选项
                             video: { url: url, type: 'hls' },
                             contextmenu: [
                                 { text: '🎬 E视界MAX', link: '/' },
@@ -3592,6 +3592,38 @@
                                 });
 
                                 observer.observe(settingBox, { attributes: true });
+
+                                // 再次点击设置按钮时关闭设置菜单
+                                const settingIcon = dplayerContainer.querySelector('.dplayer-setting-icon');
+                                if (settingIcon) {
+                                    // 使用 mousedown 记录点击前的菜单状态
+                                    let wasOpenBeforeClick = false;
+
+                                    settingIcon.addEventListener('mousedown', () => {
+                                        wasOpenBeforeClick = settingBox.classList.contains('dplayer-setting-box-open');
+                                    });
+
+                                    settingIcon.addEventListener('click', (e) => {
+                                        // 只有在点击前菜单就已经打开的情况下才关闭
+                                        if (wasOpenBeforeClick) {
+                                            e.stopPropagation();
+                                            settingBox.classList.remove('dplayer-setting-box-open');
+                                            // 同时关闭速度选择子菜单
+                                            const settingSpeed = settingBox.querySelector('.dplayer-setting-speed');
+                                            if (settingSpeed) {
+                                                settingSpeed.classList.add('dplayer-setting-box-hide');
+                                            }
+                                            // 重新显示主设置菜单（隐藏状态）
+                                            const settingOrigin = settingBox.querySelector('.dplayer-setting-origin');
+                                            if (settingOrigin) {
+                                                settingOrigin.classList.remove('dplayer-setting-box-hide');
+                                            }
+                                            console.log('[Settings] Toggled OFF by button click');
+                                        }
+                                        wasOpenBeforeClick = false; // 重置状态
+                                    });
+                                }
+
                                 console.log('[Settings] Fix applied - monitoring setting box state');
                             }
                         }, 500);
