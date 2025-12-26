@@ -3,13 +3,13 @@ name: Android Build & Release
 on:
   push:
     tags:
-      - 'v*.*.*'  # 只在推送版本标签时触发
+      - 'v2.1.1-beta'  # 只在推送版本标签时触发
   workflow_dispatch:
     inputs:
       server_url:
         description: 'Server URL (e.g. https://your-site.com)'
         required: true
-        default: 'https://ednovas.video'
+        default: 'http://175.178.29.118:3600'
       app_name:
         description: 'App Name'
         required: true
