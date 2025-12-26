@@ -1,0 +1,38 @@
+# 工作流名称，可自定义
+name: Auto Create Release
+
+# 触发条件：仅当推送以v开头的标签时运行（比如v1.0.0、v2.1.1-beta）
+on:
+  push:
+    tags:
+      - 'v*'  # 匹配所有v开头的标签，是关键配置
+
+# 定义要执行的任务
+jobs:
+  build-and-release:
+    # 运行环境：使用Ubuntu最新版
+    runs-on: ubuntu-latest
+    steps:
+      # 步骤1：拉取仓库代码到服务器
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 拉取所有历史，避免标签相关问题
+
+      # 步骤2：创建GitHub Release（核心步骤）
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        # 可选配置：自定义Release的标题、描述、是否预发布等
+        with:
+          # Release的标题，默认是标签名，也可自定义
+          name: "Release ${{ github.ref_name }}"
+          # Release的描述，可写更新内容
+          body: |
+            ## 自动生成的Release
+            标签：${{ github.ref_name }}
+            提交记录：${{ github.sha }}
+          # 是否标记为预发布（false=正式版，true=测试版）
+          prerelease: false
+        # 必须的环境变量：GitHub自动生成的Token，无需手动配置
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
